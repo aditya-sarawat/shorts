@@ -1,3 +1,10 @@
-./reels
-
-*/_pycache_
+motivational_content/__pycache__/__init__.cpython-39.pyc
+motivational_content/__pycache__/helper.cpython-39.pyc
+motivational_content/__pycache__/pixabay_api.cpython-39.pyc
+motivational_content/__pycache__/quote_generator.cpython-39.pyc
+motivational_content/__pycache__/video_processor.cpython-39.pyc
+reels/2024-02-24_21-13-07_ZcHh5.mp4
+reels/2024-02-25_16-49-23_kkgiD.mp4
+reels/2024-02-25_18-11-46_ewQto.mp4
+reels/2024-02-25_18-14-38_bsVdr.mp4
+reels/2024-02-25_18-18-22_RVhUX.mp4
