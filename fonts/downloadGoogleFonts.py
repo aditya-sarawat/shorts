@@ -1,8 +1,11 @@
 import requests
 import zipfile
 import os
+from dotenv import load_dotenv
 
-API_KEY = "AIzaSyAmji1ISjX1GBkS5mpUpRo4KoG-8ybsmq4"
+load_dotenv()
+
+API_KEY = os.getenv('GOOGLE_FONTS_API_KEY')
 OUTPUT_DIRECTORY = "./fonts/english/"
 
 
