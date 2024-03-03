@@ -21,20 +21,17 @@ def download_video(video_url):
         response.raise_for_status()
         total_size = int(response.headers.get("content-length", 0))
         block_size = 2048
-        progress_bar = tqdm(
+        with tqdm(
             total=total_size,
             unit="B",
             unit_scale=True,
             desc="Video Download",
             position=0,
-        )
-
-        with open(TEMP_VIDEO_PATH, "wb") as video_file:
-            for data in response.iter_content(block_size):
-                progress_bar.update(len(data))
-                video_file.write(data)
-
-        progress_bar.close()
+        ) as progress_bar:
+            with open(TEMP_VIDEO_PATH, "wb") as video_file:
+                for data in response.iter_content(block_size):
+                    progress_bar.update(len(data))
+                    video_file.write(data)
 
         print("Video download completed.")
         return True
@@ -44,6 +41,7 @@ def download_video(video_url):
 
 
 def trim_and_rename_video(video_path, target_duration):
+    print(f"Trimming and renaming video to {target_duration} seconds...")
     temp_path = BASE_PATH + "trimmer.mp4"
     video_clip = VideoFileClip(video_path)
     trimmed_clip = video_clip.subclip(0, target_duration)
@@ -51,6 +49,7 @@ def trim_and_rename_video(video_path, target_duration):
     video_clip.close()
     trimmed_clip.close()
     os.rename(temp_path, video_path)
+    print("Trimming and renaming completed.")
 
 
 def check_and_process_video_for_quote(video_path, quote):
@@ -59,15 +58,16 @@ def check_and_process_video_for_quote(video_path, quote):
         print(f"Downloaded video duration is {video_duration} sec")
 
         quote_length = len(quote.split())
-        required_duration = (quote_length * 0.8) + 3
+        required_duration = max((quote_length * 0.8) + 4, 15)
         print(f"Video length adjusted to {required_duration} sec")
 
         if video_duration < required_duration:
-            trim_and_rename_video(video_path, target_duration=required_duration)
+            print("Video duration is less than required.")
         else:
             trim_and_rename_video(video_path, target_duration=required_duration)
+            print("Video duration is sufficient.")
 
-        return required_duration
+        return video_duration, required_duration
     except Exception as e:
         print(f"Error during video processing: {e}")
 
@@ -82,7 +82,6 @@ def crop_and_resize_video(video_path, output_path, target_width, target_height):
     out = imageio.get_writer(output_path, fps=fps, macro_block_size=None)
 
     target_aspect_ratio = target_width / target_height
-    original_aspect_ratio = original_width / original_height
 
     crop_width = min(original_width, int(original_height * target_aspect_ratio))
     crop_start = (original_width - crop_width) // 2
@@ -93,23 +92,24 @@ def crop_and_resize_video(video_path, output_path, target_width, target_height):
         unit="frames",
         unit_scale=True,
         desc="Cropping Video",
-        position=0,
+        position=1,
     ) as pbar:
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
 
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame_cropped = cv2.resize(
-                frame[:, crop_start:crop_end], (target_width, target_height)
+                frame_rgb[:, crop_start:crop_end], (target_width, target_height)
             )
             frame_resized = cv2.cvtColor(frame_cropped, cv2.COLOR_BGR2BGRA)
 
             out.append_data(frame_resized)
             pbar.update(1)
 
-        out.close()
-        cap.release()
+    out.close()
+    cap.release()
 
     print("Video cropped and resized successfully.")
 
@@ -137,13 +137,16 @@ def apply_blur_to_video(video_path, output_path, blur_strength):
             if not ret:
                 break
 
-            frame_with_blur = apply_blur(frame, blur_strength)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame_with_blur = apply_blur(frame_rgb, blur_strength)
 
             out.append_data(frame_with_blur)
             pbar.update(1)
 
     out.close()
     cap.release()
+
+    print("Blur applied successfully.")
 
 
 def add_overlay(frame_pil):
@@ -187,9 +190,17 @@ def add_text_to_frame(frame, text, font, video_dimensions, duration, video_lengt
         line_duration = (video_length - duration) / len(lines)
 
         text_width, text_height = textsize(line, font)
-        scale_factor = min(1.0, max_width / text_width)
-        new_font_size = int(font.size * scale_factor)
-        font_resized = ImageFont.truetype(font.path, new_font_size)
+
+        # Check if font size needs adjustment
+        if text_width > video_dimensions[0]:
+            # Calculate the scale factor based on the video width
+            scale_factor = video_dimensions[0] / text_width
+            new_font_size = int(font.size * scale_factor)
+            font_resized = ImageFont.truetype(font.path, new_font_size)
+        else:
+            # Use the original font if it fits within the video dimensions
+            font_resized = font
+
         text_width_resized, text_height_resized = textsize(line, font_resized)
         x_position = (video_dimensions[0] - text_width_resized) // 2
         draw.text(
@@ -230,14 +241,15 @@ def process_cropped_video(video_path, quote, selected_font, video_length):
             unit="frames",
             unit_scale=True,
             desc="Video Processing",
-            position=1,
+            position=3,
         ) as pbar:
             while True:
                 ret, frame = cap.read()
                 if not ret:
                     break
 
-                frame_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame_pil = Image.fromarray(frame_rgb)
                 frame_pil = add_overlay(frame_pil)
                 frame_with_text = add_text_to_frame(
                     frame_pil,
