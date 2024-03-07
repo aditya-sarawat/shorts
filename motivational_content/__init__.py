@@ -8,7 +8,9 @@ from motivational_content.video_processor import (
     apply_blur_to_video,
     crop_and_resize_video,
     process_cropped_video,
+    combine_audio_video
 )
+from motivational_content.ncs_youtube import search_and_download
 
 fonts_folder = "./fonts"
 hindi_fonts_folder = os.path.join(fonts_folder, "hindi")
@@ -18,14 +20,14 @@ BASE_DIR = "./motivational_content/__temp__"
 TEMP_VIDEO_PATH = os.path.join(BASE_DIR, "temp_video.mp4")
 CROPPED_VIDEO_PATH = os.path.join(BASE_DIR, "cropped_video.mp4")
 BLURRED_VIDEO_PATH = os.path.join(BASE_DIR, "blurred_video.mp4")
-
+QUOTE_VIDEO_PATH = os.path.join(BASE_DIR, "quote_video.mp4")
+AUDIO_PATH = os.path.join(BASE_DIR, "audio.mp3")
 
 def get_random_video_or_animated(tags):
     video_url = get_random_video(tags)
     if not video_url:
         video_url = get_random_animated_video()
     return video_url
-
 
 def generate_motivational_content():
     quote_info = get_combined_quote()
@@ -96,10 +98,9 @@ def generate_motivational_content():
     )
     apply_blur_to_video(CROPPED_VIDEO_PATH, BLURRED_VIDEO_PATH, blur_strength)
     process_cropped_video(BLURRED_VIDEO_PATH, quote, selected_font, video_length)
+    search_and_download(tags)
+    combine_audio_video(AUDIO_PATH, QUOTE_VIDEO_PATH)
 
-    for file_path in [TEMP_VIDEO_PATH, CROPPED_VIDEO_PATH, BLURRED_VIDEO_PATH]:
+    for file_path in [TEMP_VIDEO_PATH, CROPPED_VIDEO_PATH, BLURRED_VIDEO_PATH, QUOTE_VIDEO_PATH, AUDIO_PATH]:
         if os.path.exists(file_path):
             os.remove(file_path)
-
-
-generate_motivational_content()

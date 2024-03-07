@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import imageio
 import requests
 from tqdm import tqdm
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip
 from motivational_content.helper import generate_unique_filename
 from moviepy.video.fx.all import mirror_x
 
@@ -220,13 +220,9 @@ def process_cropped_video(video_path, quote, selected_font, video_length):
     try:
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS)
-        out = imageio.get_writer(
-            os.path.join("./reels", generate_unique_filename("mp4")),
-            fps=fps,
-            macro_block_size=None,
-        )
+        output_path = os.path.join(BASE_PATH, "quote_video.mp4")
+        out = imageio.get_writer(output_path, fps=fps, macro_block_size=None)
 
-        print("Processing video...")
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         original_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -271,6 +267,23 @@ def process_cropped_video(video_path, quote, selected_font, video_length):
         cap.release()
         out.close()
 
-        print("Video processing completed.")
+        print(f"Video processing completed. Saved at: {output_path}")
     except Exception as e:
         print(f"Error during video processing: {e}")
+
+def combine_audio_video(audio_path, video_path):
+    try:
+        audio = AudioFileClip(audio_path)
+        video = VideoFileClip(video_path)
+
+        audio = audio.set_duration(video.duration)
+
+        video_with_audio = video.set_audio(audio)
+
+        output_path = os.path.join("./reels", generate_unique_filename("mp4"))
+
+        video_with_audio.write_videofile(output_path, codec='libx264', audio_codec='aac', fps=video.fps)
+
+        print(f"Audio and video combination completed. Saved at: {output_path}")
+    except Exception as e:
+        print(f"Error during audio and video combination: {e}")

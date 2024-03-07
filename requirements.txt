@@ -1,0 +1,10 @@
+Pillow
+opencv-python
+imageio
+moviepy
+numpy
+pydub
+pytube
+requests
+tqdm
+youtube-search-python
