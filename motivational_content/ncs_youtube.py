@@ -1,18 +1,18 @@
 import os
 import random
 import time
-from tqdm import tqdm
 from pytube import YouTube
 from pydub import AudioSegment
 from youtubesearchpython import VideosSearch
 
 DESTINATION_FOLDER = "./motivational_content/__temp__"
 
-def search_and_download(tags, max_retries=3, retry_delay=5):
+
+def search_and_download_song(tags, max_retries=3, retry_delay=5):
     combined_results = []
 
     for tag in tags:
-        search_query = f"{tag} NoCopyrightSounds"
+        search_query = f"{tag} NoCopyrightSounds tune"
         videos_search = VideosSearch(search_query, limit=50)
         results = videos_search.result()["result"]
         filtered_results = [
@@ -36,7 +36,6 @@ def search_and_download(tags, max_retries=3, retry_delay=5):
         combined_results.extend(filtered_results)
 
     if not combined_results:
-        print("No results found.")
         return
 
     selected_video = random.choice(combined_results)
@@ -59,12 +58,9 @@ def search_and_download(tags, max_retries=3, retry_delay=5):
             audio.export(mp3_path, format="mp3")
             os.remove(video_path)
 
-            print(f"Downloaded video: {selected_video['title']}")
             return
         except Exception as e:
-            print(f"Error downloading video: {e}")
             retries += 1
-            print(f"Retrying ({retries}/{max_retries}) in {retry_delay} seconds...")
             time.sleep(retry_delay)
 
-    print("Max retries reached. Failed to download video.")
+    return

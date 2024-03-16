@@ -1,3 +1,4 @@
+python-dotenv
 Pillow
 opencv-python
 imageio
@@ -8,3 +9,8 @@ pytube
 requests
 tqdm
 youtube-search-python
+youtube-dl 
+google-auth 
+google-auth-oauthlib 
+google-auth-httplib2
+google-api-python-client
