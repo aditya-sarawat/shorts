@@ -1,7 +1,11 @@
+import os
 import random
 import requests
+from dotenv import load_dotenv
 
-PIXABAY_API_KEY = "42518894-e478541da94da97b6ca49eb3f"
+load_dotenv()
+
+PIXABAY_API_KEY = os.getenv('PIXABAY_API_KEY')
 
 
 def get_random_video_url(video_hits):

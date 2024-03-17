@@ -42,7 +42,7 @@ def generate_motivational_content():
     title, hashtags = get_title_and_hashtags(quote, tags)
     print(f"\nTags: {tags}\nQuote: {quote}\n\nTitle: {title}\nHashtags: {hashtags}")
 
-    attempt_limit = 3
+    attempt_limit = 5
 
     for attempt in range(1, attempt_limit + 1):
         video_url = get_random_video_or_animated(tags)
