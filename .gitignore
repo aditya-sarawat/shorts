@@ -5,3 +5,4 @@ motivational_content/__temp__
 .env
 client_secrets.json
 credentials.json
+.venv
