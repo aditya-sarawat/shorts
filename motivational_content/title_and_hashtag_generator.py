@@ -28,10 +28,10 @@ def get_title_and_hashtags(quote, tags=None):
     random.shuffle(relevant_terms)
     hashtags = [f"#{term}" for term in relevant_terms][:5]
 
-    #update later
-    hashtags = ["#Shorts", "#motivation", "#quotes"]
-
     for tag in tags:
         hashtags.append("#" + tag)
+    
+    #update later
+    hashtags = ["#Shorts", "#motivation", "#quotes"]
 
     return title, hashtags

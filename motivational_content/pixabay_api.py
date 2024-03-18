@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PIXABAY_API_KEY = os.getenv('PIXABAY_API_KEY')
+PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")
 
 
 def get_random_video_url(video_hits):
@@ -17,7 +17,7 @@ def get_random_video_url(video_hits):
         return None
 
 
-def get_top_videos_by_tags(max_videos=10, tag=""):
+def get_top_videos_by_tags(max_videos=200, tag=""):
     URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&safesearch=true&q={tag}&order=popular&per_page={max_videos}"
 
     try:
@@ -35,7 +35,7 @@ def get_top_videos_by_tags(max_videos=10, tag=""):
         return None
 
 
-def get_top_animated_videos(max_videos=10):
+def get_top_animated_videos(max_videos=200):
     URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&safesearch=true&order=popular&video_type=animation&per_page={max_videos}"
 
     try:
@@ -57,7 +57,7 @@ def get_random_video(tags=[]):
     top_videos = []
 
     for tag in tags:
-        videos_for_tag = get_top_videos_by_tags(30, tag)
+        videos_for_tag = get_top_videos_by_tags(80, tag)
         if videos_for_tag:
             top_videos.extend(videos_for_tag)
 
