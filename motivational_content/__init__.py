@@ -119,4 +119,4 @@ def generate_motivational_content():
 
     print("Motivational content creation completed!")
 
-    return final_video_path, title, tags
+    return final_video_path, title, hashtags

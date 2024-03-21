@@ -22,16 +22,16 @@ def authenticate_youtube():
     return credentials
 
 
-def upload_to_youtube(video_path, title, tags):
+def upload_to_youtube(video_path, title, hashtags):
     credentials = authenticate_youtube()
     youtube = build("youtube", "v3", credentials=credentials)
 
-    tags_str = " ".join(tags)
+    hashtags_str = " ".join(hashtags)
 
     request_body = {
         "snippet": {
-            "title": title + " " + tags_str,
-            "description": "Quote: " + title,
+            "title": title + " #Shorts",
+            "description": "Quote: " + title + " " + hashtags_str,
             "categoryId": "22",
         },
         "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},

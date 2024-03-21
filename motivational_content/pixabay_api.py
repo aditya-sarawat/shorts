@@ -18,7 +18,7 @@ def get_random_video_url(video_hits):
 
 
 def get_top_videos_by_tags(max_videos=200, tag=""):
-    URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&safesearch=true&q={tag}&order=popular&per_page={max_videos}"
+    URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&q={tag}&order=popular&per_page={max_videos}"
 
     try:
         response = requests.get(URL)
@@ -36,7 +36,7 @@ def get_top_videos_by_tags(max_videos=200, tag=""):
 
 
 def get_top_animated_videos(max_videos=200):
-    URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&safesearch=true&order=popular&video_type=animation&per_page={max_videos}"
+    URL = f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&order=popular&video_type=animation&per_page={max_videos}"
 
     try:
         response = requests.get(URL)
@@ -57,7 +57,7 @@ def get_random_video(tags=[]):
     top_videos = []
 
     for tag in tags:
-        videos_for_tag = get_top_videos_by_tags(80, tag)
+        videos_for_tag = get_top_videos_by_tags(100, tag)
         if videos_for_tag:
             top_videos.extend(videos_for_tag)
 
