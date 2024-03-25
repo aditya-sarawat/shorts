@@ -6,3 +6,4 @@ motivational_content/__temp__
 client_secrets.json
 credentials.json
 .venv
+*.out
