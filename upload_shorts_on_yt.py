@@ -28,9 +28,14 @@ def upload_to_youtube(video_path, title, hashtags):
 
     hashtags_str = " ".join(hashtags)
 
+    if len(title) > 70:
+        title = title[:67] + "..."
+    else:
+        title = title
+
     request_body = {
         "snippet": {
-            "title": title + " #Shorts",
+            "title": title + " #shorts",
             "description": "Quote: " + title + " " + hashtags_str,
             "categoryId": "22",
         },

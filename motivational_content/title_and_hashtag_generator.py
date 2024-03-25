@@ -36,7 +36,7 @@ def get_title_and_hashtags(quote, tags=None):
 
     # update later
     hashtags = [
-        "#Shorts",
+        "#shorts",
         "#youtubeshorts",
         "#youtube",
         "#short",
