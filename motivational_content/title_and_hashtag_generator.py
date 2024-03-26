@@ -1,12 +1,6 @@
-import random
-import nltk
-from rake_nltk import Rake
-import spacy
 import logging
-
-# Download NLTK resources
-nltk.download("stopwords", quiet=True)
-nltk.download("punkt", quiet=True)
+import time
+from motivational_content.gemini import start_gemini_chat
 
 # Default hashtags
 DEFAULT_HASHTAGS = [
@@ -17,11 +11,7 @@ DEFAULT_HASHTAGS = [
     "#shortvideo",
     "#trending",
     "#trendingshorts",
-    "#motivational",
-    "#motivation",
     "#quotes",
-    "#memes",
-    "#life",
 ]
 
 # Set up logging
@@ -30,72 +20,54 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-def extract_keywords(text):
-    """
-    Extract keywords from the given text using SpaCy.
-    :param text: Input text.
-    :return: List of keywords.
-    """
-    try:
-        nlp = spacy.load("en_core_web_sm")
-        doc = nlp(text)
-        keywords = [
-            token.text.lower()
-            for token in doc
-            if not token.is_stop and not token.is_punct
-        ]
-        return keywords
-    except Exception as e:
-        logger.error(f"Error extracting keywords: {e}")
-        return []
-
-
-def extract_key_phrases(text):
-    """
-    Extract key phrases from the given text using RAKE.
-    :param text: Input text.
-    :return: List of key phrases.
-    """
-    try:
-        r = Rake()
-        r.extract_keywords_from_text(text)
-        key_phrases = r.get_ranked_phrases()
-        return key_phrases
-    except Exception as e:
-        logger.error(f"Error extracting key phrases: {e}")
-        return []
+MAX_RETRIES = 5
 
 
 def get_title_and_hashtags(quote, tags=None):
     """
-    Generate a title and hashtags for the quote.
+    Generate a title and hashtags for the YouTube Shorts video.
     :param quote: Input quote.
     :param tags: Optional list of tags.
     :return: Title and hashtags.
     """
-    try:
-        title = f"🔥 {quote} 🔥"
-        keywords = extract_keywords(quote)
-        key_phrases = extract_key_phrases(quote)
+    retries = 0
+    title = None
+    final_hashtags = set()
 
-        # Combine keywords and key phrases
-        relevant_terms = list(set(keywords + key_phrases))
-        random.shuffle(relevant_terms)
-        hashtag_terms = relevant_terms[:5]
+    while retries < MAX_RETRIES:
+        try:
+            # Generate title using Gemini
+            title_prompt = f"Generate a one line title for a YouTube Shorts video featuring the quote: '{quote}'. Only return the title."
+            title_response = start_gemini_chat(title_prompt)
+            title = title_response.strip()  # Remove leading/trailing whitespace
 
-        # Generate hashtags from relevant terms
-        hashtags = [f"#{term}" for term in hashtag_terms]
+            # Ensure title includes '#shorts'
+            if not any(hashtag.lower() == "#shorts" for hashtag in title.split()):
+                title += " #shorts"
 
-        # Add default hashtags
-        final_hashtags = DEFAULT_HASHTAGS + hashtags
+            # Generate hashtags using Gemini
+            prompt = f"Generate hashtags for a YouTube Shorts video to maximize views, aiming for it to reach the #1 trending spot. The video features the following quote: '{quote}', and the quote is generated using following tags: {tags}. Must include hashtags relevant to the quote's theme (e.g., motivational, funny, inspirational), considering current trends. Include a mix of general, quote-specific, and call-to-action hashtags. Also include the hashtags that are may not be relevant to the quote but are used to achieve the given target (e.g.. #TrendingNow, #Shorts, #YouTubeShorts). Only return the hashtags."
 
-        # Add user-defined tags as hashtags
-        if tags:
-            for tag in tags:
-                final_hashtags.append("#" + tag)
+            response = start_gemini_chat(prompt)
 
-        return title, final_hashtags
-    except Exception as e:
-        logger.error(f"Error generating title and hashtags: {e}")
-        return None, []
+            # Extract hashtags from the response
+            hashtags = [word for word in response.split() if word.startswith("#")]
+
+            if not hashtags:
+                logger.info("No hashtags found in response. Retrying...")
+                time.sleep(2)  # Adding a slight delay before retrying
+                retries += 1
+                continue
+
+            # Add missing default hashtags
+            final_hashtags = set(hashtags + DEFAULT_HASHTAGS)
+            break  # Break out of the loop if successful
+        except Exception as e:
+            logger.error(f"Error generating title and hashtags: {e}")
+            retries += 1
+
+    if not title:
+        logger.info("Max retries reached, returning default title and hashtags.")
+        title = "Default Title"
+
+    return title, final_hashtags

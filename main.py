@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 if __name__ == "__main__":
     try:
         # Generate motivational content
-        video_path, title, hashtags = generate_motivational_content()
+        video_path, quote, title, hashtags = generate_motivational_content()
 
         # Upload the generated content to YouTube
-        upload_to_youtube(video_path, title, hashtags)
+        upload_to_youtube(video_path, quote, title, hashtags)
 
         logger.info(
             "Motivational content generation and YouTube upload completed successfully."

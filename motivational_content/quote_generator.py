@@ -55,11 +55,35 @@ def get_english_quote_from_forismatic():
         logger.error(f"Error during Forismatic API request: {e}")
         return None
 
+def get_quote_from_quotable():
+    """
+    Get an English quote from the Quotable API.
+    :return: Tags associated with the quote and the quote itself.
+    """
+    try:
+        tags = get_tags_for_quote()
+        response = requests.get("https://api.quotable.io/random")
+        response.raise_for_status()
+        quote_data = response.json()
+        return tags, quote_data["content"]
+        print(quote_data)
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error during Quotable API request: {e}")
+        return None
+
 
 def get_combined_quote():
     """
-    Get a combined quote by fetching an English quote from the Forismatic API.
+    Get a combined quote by randomly fetching an English quote from either the Forismatic or Quotable APIs.
     :return: Tags associated with the quote and the quote itself.
     """
-    tags, quote = get_english_quote_from_forismatic()
-    return tags, quote
+    quote_sources = [get_english_quote_from_forismatic, get_quote_from_quotable]
+    random_source = random.choice(quote_sources)
+    
+    # quote_data = random_source()
+    quote_data = get_quote_from_quotable()
+    if quote_data:
+        return quote_data
+
+    # If both APIs fail, return None
+    return None

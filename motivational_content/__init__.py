@@ -54,6 +54,7 @@ def generate_motivational_content():
         os.makedirs(base_dir, exist_ok=True)
 
         # Retrieve a combined quote to use in the content generation
+        logger.info("Getting a quote and tags for the quote...")
         quote_info = get_combined_quote()
         if not quote_info:
             return
@@ -61,24 +62,29 @@ def generate_motivational_content():
         # Extract tags and quote from the retrieved quote information
         tags, quote = quote_info
         # Generate title and hashtags based on the quote and tags
+        logger.info("Generating the Title and Hashtags for the video...")
         title, hashtags = get_title_and_hashtags(quote, tags)
 
+        # Check available fonts for text overlay on the video
+        logger.info("Checking for the available fonts and selecting the random available font...")
+        available_fonts = [
+            f for f in os.listdir(english_fonts_folder) if f.endswith(".ttf")
+        ]
+
+        if not available_fonts:
+            return
+        
+        selected_font = os.path.join(
+            english_fonts_folder, random.choice(available_fonts)
+        )
+
         # Attempt to find a suitable video to accompany the quote
+        logger.info("Downloading video for the quote...")
         attempt_limit = 5
         for attempt in range(1, attempt_limit + 1):
             video_url = get_random_video_or_animated(tags)
             if not video_url:
                 return
-
-            # Check available fonts for text overlay on the video
-            available_fonts = [
-                f for f in os.listdir(english_fonts_folder) if f.endswith(".ttf")
-            ]
-            if not available_fonts:
-                return
-            selected_font = os.path.join(
-                english_fonts_folder, random.choice(available_fonts)
-            )
 
             # Download the selected video
             if not download_video(video_url):
@@ -97,29 +103,38 @@ def generate_motivational_content():
 
         else:
             return
-
+        
         # Set target dimensions and blur strength for video processing
         target_width, target_height = 720, 1280
         blur_strength = random.uniform(5, 10)
 
         # Crop and resize the video
+        logger.info("Cropping video for youtube shorts and insatagram reel...")
         crop_and_resize_video(
             video_paths["temp_video"],
             video_paths["cropped_video"],
             target_width,
             target_height,
         )
+
         # Apply blur effect to the video
+        logger.info("Applying blur to the cropped video...")
         apply_blur_to_video(
             video_paths["cropped_video"], video_paths["blurred_video"], blur_strength
         )
+
         # Process the video with text overlay
+        logger.info("Adding quote to the blurred video...")
         process_cropped_video(
             video_paths["blurred_video"], quote, selected_font, video_length
         )
+
         # Search and download background music for the video
+        logger.info("Downloading the Copyright Free Sound for video...")
         search_and_download_song(tags)
+
         # Combine audio and video to produce the final motivational content
+        logger.info("Adding song to the quote video...")
         final_video_path = combine_audio_video(
             video_paths["audio"], video_paths["quote_video"]
         )
@@ -127,7 +142,7 @@ def generate_motivational_content():
         # Remove the entire __temp__ directory and its contents
         shutil.rmtree(base_dir)
 
-        return final_video_path, title, hashtags
+        return final_video_path, quote, title, hashtags
     except Exception as e:
         logger.error(f"An error occurred during content generation: {e}")
-        return None, None, None
+        return None, None, None, None
