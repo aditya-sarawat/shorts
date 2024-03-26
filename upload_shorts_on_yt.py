@@ -34,9 +34,9 @@ def upload_to_youtube(video_path, quote, title, hashtags):
             "snippet": {
                 "title": title,
                 "description": f"Quote: {quote}\n\n\n\n{hashtags_str}",
-                "categoryId": "22",
+                "categoryId": "24",
             },
-            "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
+            "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, },
         }
 
         media_file = (

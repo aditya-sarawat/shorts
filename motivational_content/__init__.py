@@ -97,6 +97,8 @@ def generate_motivational_content():
                 )
                 if video_length >= required_length:
                     break
+                else:
+                    logger.info("Video length is less than required length, retrying...")
 
             except Exception as e:
                 return

@@ -66,7 +66,6 @@ def get_quote_from_quotable():
         response.raise_for_status()
         quote_data = response.json()
         return tags, quote_data["content"]
-        print(quote_data)
     except requests.exceptions.RequestException as e:
         logger.error(f"Error during Quotable API request: {e}")
         return None

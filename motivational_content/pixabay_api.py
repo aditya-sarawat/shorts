@@ -87,7 +87,7 @@ def get_random_video(tags=[]):
 
     # Search for top videos for each tag and combine them
     for tag in tags:
-        videos_for_tag = get_top_videos_by_tags(100, tag)
+        videos_for_tag = get_top_videos_by_tags(200, tag)
         if videos_for_tag:
             top_videos.extend(videos_for_tag)
 

@@ -6,6 +6,7 @@ from pytube import YouTube
 from pydub import AudioSegment
 from youtubesearchpython import VideosSearch
 
+# Set up logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -13,6 +14,17 @@ logger = logging.getLogger(__name__)
 
 # Destination folder for downloaded files
 DESTINATION_FOLDER = "./motivational_content/__temp__"
+
+# Channels to search for copyright-free music
+ALLOWED_CHANNELS = [
+    "NoCopyrightSounds",
+    "Background Music Without Limitations",
+    "No Copyright Background Music",
+    "Infraction - No Copyright Music",
+    "No Copyright Music",
+    "MorningLightMusic",
+    "BreakingCopyright — Royalty Free Music",
+]
 
 
 def search_and_download_song(tags, max_retries=3, retry_delay=5):
@@ -28,22 +40,22 @@ def search_and_download_song(tags, max_retries=3, retry_delay=5):
 
     # Search YouTube for videos related to each tag
     for tag in tags:
-        search_query = f"{tag} NoCopyrightSounds tune"
+        search_query = f"{tag} no copyright background music"
         videos_search = VideosSearch(search_query, limit=50)
         results = videos_search.result()["result"]
 
-        # Filter results to include only those from the NoCopyrightSounds channel
+        # Filter results to include only those from the specified channels
         filtered_results = [
             result
             for result in results
             if result.get("channel")
-            and result["channel"].get("name") == "NoCopyrightSounds"
+            and result["channel"].get("name") in ALLOWED_CHANNELS
         ]
         combined_results.extend(filtered_results)
 
     # If no relevant results are found, search for general NoCopyrightSounds videos
     if not combined_results and "NoCopyrightSounds" not in tags:
-        search_query = "NoCopyrightSounds"
+        search_query = "no copyright background music"
         videos_search = VideosSearch(search_query, limit=50)
         results = videos_search.result()["result"]
 
@@ -52,7 +64,7 @@ def search_and_download_song(tags, max_retries=3, retry_delay=5):
             result
             for result in results
             if result.get("channel")
-            and result["channel"].get("name") == "NoCopyrightSounds"
+            and result["channel"].get("name") in ALLOWED_CHANNELS
         ]
         combined_results.extend(filtered_results)
 
