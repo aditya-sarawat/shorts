@@ -23,7 +23,7 @@ def authenticate_youtube():
             creds_file.write(credentials.to_json())
     return credentials
 
-def upload_to_youtube(video_path, quote, title, hashtags):
+def upload_to_youtube(video_path, quote, title, description, hashtags):
     try:
         credentials = authenticate_youtube()
         youtube = build("youtube", "v3", credentials=credentials)
@@ -33,7 +33,7 @@ def upload_to_youtube(video_path, quote, title, hashtags):
         request_body = {
             "snippet": {
                 "title": title,
-                "description": f"Quote: {quote}\n\n\n\n{hashtags_str}",
+                "description": f"{description}\n\nQuote: {quote}\n\n\n\n{hashtags_str}",
                 "categoryId": "24",
             },
             "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, },

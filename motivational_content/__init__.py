@@ -5,7 +5,7 @@ import shutil
 from motivational_content.ncs_youtube import search_and_download_song
 from motivational_content.pixabay_api import get_random_animated_video, get_random_video
 from motivational_content.quote_generator import get_combined_quote
-from motivational_content.title_and_hashtag_generator import get_title_and_hashtags
+from motivational_content.title_description_and_hashtag_generator import get_title_and_description_and_hashtags
 from motivational_content.video_processor import (
     download_video,
     check_and_process_video_for_quote,
@@ -63,7 +63,7 @@ def generate_motivational_content():
         tags, quote = quote_info
         # Generate title and hashtags based on the quote and tags
         logger.info("Generating the Title and Hashtags for the video...")
-        title, hashtags = get_title_and_hashtags(quote, tags)
+        title, description, hashtags = get_title_and_description_and_hashtags(quote, tags)
 
         # Check available fonts for text overlay on the video
         logger.info("Checking for the available fonts and selecting the random available font...")
@@ -144,7 +144,7 @@ def generate_motivational_content():
         # Remove the entire __temp__ directory and its contents
         shutil.rmtree(base_dir)
 
-        return final_video_path, quote, title, hashtags
+        return final_video_path, quote, title, description, hashtags
     except Exception as e:
         logger.error(f"An error occurred during content generation: {e}")
-        return None, None, None, None
+        return None, None, None, None, None
