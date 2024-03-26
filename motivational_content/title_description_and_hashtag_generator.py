@@ -44,17 +44,17 @@ def get_title_and_description_and_hashtags(quote, tags=None):
 
             # Ensure title includes '#shorts'
             if not any(hashtag.lower() == "#shorts" for hashtag in title.split()):
-                title += " #shorts"
+                title += " #Shorts"
 
             # Generate description using Gemini
-            description_prompt = f"Generate a accurate and catchy description for a YouTube Shorts video featuring the quote: '{quote}'. This description should provide a brief overview or teaser of what viewers can expect from the video. Only return the description."
+            description_prompt = f"Generate a accurate and catchy description for a YouTube Shorts video featuring the quote: '{quote}'. This description should provide a brief overview or teaser of what viewers can expect from the video and should be short and should not include hashtags. Only return the description."
             description_response = start_gemini_chat(description_prompt)
             description = (
                 description_response.strip()
             )
 
             # Generate hashtags using Gemini
-            prompt = f"Generate hashtags for a YouTube Shorts video to maximize views, aiming for it to reach the #1 trending spot. The video features the following quote: '{quote}', and the quote is generated using following tags: {tags}. Must include hashtags relevant to the quote's theme (e.g., motivational, funny, inspirational), considering current trends. Include a mix of general, quote-specific, and call-to-action hashtags. Also include the hashtags that are may not be relevant to the quote but are used to achieve the given target (e.g.. #TrendingNow, #Shorts, #YouTubeShorts). Only return the hashtags."
+            prompt = f"Generate hashtags for a YouTube Shorts video to maximize views. The video features the following quote: '{quote}', and the quote is generated using following tags: {tags}. Must include hashtags relevant to the quote's theme (e.g., motivational, funny, inspirational), considering current trends. Include a mix of general, quote-specific, and call-to-action hashtags. Also include the hashtags that are may not be relevant to the quote but are used to achieve the given target (e.g.. #TrendingNow, #Shorts, #YouTubeShorts). Only return the hashtags."
 
             response = start_gemini_chat(prompt)
 
