@@ -33,7 +33,7 @@ def upload_to_youtube(video_path, quote, title, description, hashtags):
         request_body = {
             "snippet": {
                 "title": title,
-                "description": f"{description}\n\nQuote: {quote}\n\n\n\n{hashtags_str}",
+                "description": f"{description}\n\nQuote: {quote}\n\n\n\n{hashtags_str}  ",
                 "categoryId": "24",
             },
             "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False, },

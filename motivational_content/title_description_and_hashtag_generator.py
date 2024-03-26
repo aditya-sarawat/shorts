@@ -44,7 +44,7 @@ def get_title_and_description_and_hashtags(quote, tags=None):
 
             # Ensure title includes '#shorts'
             if not any(hashtag.lower() == "#shorts" for hashtag in title.split()):
-                title += " #Shorts"
+                title += " #shorts  "
 
             # Generate description using Gemini
             description_prompt = f"Generate a accurate and catchy description for a YouTube Shorts video featuring the quote: '{quote}'. This description should provide a brief overview or teaser of what viewers can expect from the video and should be short and should not include hashtags. Only return the description."
