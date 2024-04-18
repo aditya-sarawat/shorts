@@ -5,7 +5,9 @@ import shutil
 from motivational_content.ncs_youtube import search_and_download_song
 from motivational_content.pixabay_api import get_random_animated_video, get_random_video
 from motivational_content.quote_generator import get_combined_quote
-from motivational_content.title_description_and_hashtag_generator import get_title_and_description_and_hashtags
+from motivational_content.title_description_and_hashtag_generator import (
+    get_title_and_description_and_hashtags,
+)
 from motivational_content.video_processor import (
     download_video,
     check_and_process_video_for_quote,
@@ -14,6 +16,7 @@ from motivational_content.video_processor import (
     process_cropped_video,
     combine_audio_video,
 )
+from motivational_content.helper import delete_old_files
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +37,7 @@ video_paths = {
     "quote_video": os.path.join(base_dir, "quote_video.mp4"),
     "audio": os.path.join(base_dir, "audio.mp3"),
 }
+reels = "./motivational_content/reels"
 
 
 def get_random_video_or_animated(tags):
@@ -53,6 +57,9 @@ def generate_motivational_content():
         # Create the __temp__ directory if it doesn't exist
         os.makedirs(base_dir, exist_ok=True)
 
+        # Delete older reels
+        delete_old_files(reels)
+
         # Retrieve a combined quote to use in the content generation
         logger.info("Getting a quote and tags for the quote...")
         quote_info = get_combined_quote()
@@ -63,17 +70,21 @@ def generate_motivational_content():
         tags, quote = quote_info
         # Generate title and hashtags based on the quote and tags
         logger.info("Generating the Title and Hashtags for the video...")
-        title, description, hashtags = get_title_and_description_and_hashtags(quote, tags)
+        title, description, hashtags = get_title_and_description_and_hashtags(
+            quote, tags
+        )
 
         # Check available fonts for text overlay on the video
-        logger.info("Checking for the available fonts and selecting the random available font...")
+        logger.info(
+            "Checking for the available fonts and selecting the random available font..."
+        )
         available_fonts = [
             f for f in os.listdir(english_fonts_folder) if f.endswith(".ttf")
         ]
 
         if not available_fonts:
             return
-        
+
         selected_font = os.path.join(
             english_fonts_folder, random.choice(available_fonts)
         )
@@ -98,14 +109,16 @@ def generate_motivational_content():
                 if video_length >= required_length:
                     break
                 else:
-                    logger.info("Video length is less than required length, retrying...")
+                    logger.info(
+                        "Video length is less than required length, retrying..."
+                    )
 
             except Exception as e:
                 return
 
         else:
             return
-        
+
         # Set target dimensions and blur strength for video processing
         target_width, target_height = 720, 1280
         blur_strength = random.uniform(5, 10)
