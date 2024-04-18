@@ -62,9 +62,11 @@ def get_quote_from_quotable():
     """
     try:
         tags = get_tags_for_quote()
-        response = requests.get("https://api.quotable.io/random")
+        formatted_tags = '|'.join(tags)
+        response = requests.get(f"https://api.quotable.io/random?tags={formatted_tags}")
         response.raise_for_status()
         quote_data = response.json()
+        print (quote_data)
         return tags, quote_data["content"]
     except requests.exceptions.RequestException as e:
         logger.error(f"Error during Quotable API request: {e}")
