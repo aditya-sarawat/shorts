@@ -1,9 +1,7 @@
-__pycache__/*
-motivational_content/__pycache__/*
-reels/*
-motivational_content/__temp__
+__pycache__
+reels
+__temp__
 .env
 client_secrets.json
 credentials.json
-.venv
 *.out
