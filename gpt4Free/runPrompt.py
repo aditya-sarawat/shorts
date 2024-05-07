@@ -24,7 +24,6 @@ def runPrompt(role, prompt):
 
         # Log the successful completion
         logger.info("Prompt executed successfully.")
-        print(completion_content)
 
         return completion_content
     except Exception as e:
