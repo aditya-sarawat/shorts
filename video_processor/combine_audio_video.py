@@ -9,9 +9,6 @@ logger = get_logger()
 
 def combine_audio_video(audio_path, video_path, output_dir):
     try:
-        print(
-            f"Audio Path: {audio_path}, Video Path: {video_path}, Output Directory: {output_dir}"
-        )
         ensure_directory_exists(output_dir)
         audio = AudioFileClip(audio_path)
         video = VideoFileClip(video_path)

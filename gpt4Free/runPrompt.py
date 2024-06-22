@@ -10,12 +10,12 @@ def runPrompt(role, prompt):
     try:
         client = Client()
 
-        # Define the message for the GPT-4 model
+        # Define the message for the GPT-3.5-turbo model
         message = {"role": role, "content": prompt}
 
-        # Call GPT-4 to generate completion
+        # Call GPT-3.5-turbo to generate completion
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[message],
         )
 
