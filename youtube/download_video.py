@@ -32,12 +32,12 @@ def download_video(video_id, destination_folder, max_retries=3, retry_delay=5):
             # Remove the downloaded video file
             os.remove(video_path)
 
-            logger.info("Song downloaded successfully.")
+            logger.info("Video downloaded from YouTube successfully.")
             return mp3_path
         except Exception as e:
             retries += 1
             time.sleep(retry_delay)
             logger.error(f"Error downloading song: {e}")
 
-    logger.error("Failed to download song after multiple retries.")
+    logger.error("Failed to download video from YouTube after multiple retries.")
     return None

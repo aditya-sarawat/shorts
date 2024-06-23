@@ -18,6 +18,8 @@ ALLOWED_CHANNELS = [
     "No Copyright Music",
     "MorningLightMusic",
     "BreakingCopyright — Royalty Free Music",
+    "Euphoria Audio - Royalty Free Music",
+    "WavebeatsMusic - Royalty Free Music"
 ]
 
 
@@ -26,7 +28,7 @@ def search_videos(tags, max_results=50):
 
     try:
         for tag in tags:
-            search_query = f"{tag} no copyright background music"
+            search_query = f"no copyright background music {tag}"
             videos_search = VideosSearch(search_query, limit=max_results)
             results = videos_search.result()["result"]
 

@@ -42,10 +42,9 @@ def get_random_video_by_tag(tags=[]):
             top_videos.extend(videos_for_tag)
 
     if top_videos:
-        # Correct variable name here
         random_video_hit = get_random(top_videos)
         video_url = random_video_hit["videos"]["large"]["url"]
         return video_url
     else:
-        logger.warning("No videos found on Pixabay.")
+        logger.warning("No videos found on Pixabay for the tags: {tags}")
         return None
